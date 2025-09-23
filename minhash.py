@@ -4,8 +4,10 @@
 import random as rand
 import numpy as np
 import os
+import sys 
 os.system('cls')
 
+# (each column is a set)
 data_matrix = np.array([
     [1, 0, 1, 0],
     [0, 1, 0, 0],
@@ -13,7 +15,8 @@ data_matrix = np.array([
     [1, 0, 0, 1],
     [0, 1, 1, 0],
 ])
-signature_matrix = np.full((4, 4), 9)
+
+# (each hash function is a column)
 hash_index_matrix = np.array([
     [0, 3, 4, 4],
     [2, 1, 5, 0],
@@ -28,7 +31,13 @@ hash_index_matrix = np.array([
 # But this just takes in a 
 # matrix of >= 1 minhash function (hash_mat)...
 # So hopefully that's ok
-def minhash(data_mat, sig_mat, hash_mat):
+def minhash(data_mat, hash_mat):
+    # resulting sig_mat has 
+    # 1 column per set
+    # 1 row per hash function (each hash function is a column in hash_mat)
+    _, cols = data_mat.shape
+    _, rows = hash_mat.shape
+    sig_mat = np.full((rows, cols), sys.maxsize)
     # for every row index in hash_mat
     for i in range(len(hash_mat)):
         hash_row = hash_index_matrix[i]
@@ -52,5 +61,4 @@ def minhash(data_mat, sig_mat, hash_mat):
     
     return sig_mat
 
-
-print(minhash(data_matrix, signature_matrix, hash_index_matrix))
+print(minhash(data_matrix, hash_index_matrix))
