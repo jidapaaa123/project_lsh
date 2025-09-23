@@ -3,6 +3,7 @@ import pandas as pd
 import random as rand
 import matplotlib.pyplot as plt
 import numpy as np
+import itertools as iter
 
 # my own module
 from minhash import minhash
@@ -10,6 +11,7 @@ from minhash import minhash
 
 os.system('cls')
 
+NUM_OF_HASH_FUNCTIONS = 250
 path = "./food_consumption.csv"
 df = pd.read_csv(path)
 
@@ -42,13 +44,26 @@ print(pivot['consumption'])
 # the co2_emission column, so I'll ignore it now
 # def minhash():
 
-rows = pivot.index
-cols = len(pivot.columns)
+# data_matrix = pivot['consumption]
+# minhash function can just be random permutation of range(rows)
+rows = len(pivot.index) # = 11 rows
+possible_indices = range(rows)
 
 
+# 250 functions = 250 columns
+# 11 rows
+hash_matrix = np.empty((rows, NUM_OF_HASH_FUNCTIONS), dtype=int) 
+    # declare the type because I don't like 
+    # seeing the periods after the numbers
+
+# generate 250 minhash functions
+# populate into each column of hash_matrix
+for i in range(NUM_OF_HASH_FUNCTIONS):
+    hash_func = np.random.permutation(possible_indices)
+    hash_matrix[:, i] = hash_func
+
+# print(hash_matrix)
 
 
-
-
-
-
+signature_matrix = minhash(pivot['consumption'].to_numpy(), hash_matrix)
+print(signature_matrix)

@@ -40,11 +40,11 @@ def minhash(data_mat, hash_mat):
     sig_mat = np.full((rows, cols), sys.maxsize)
     # for every row index in hash_mat
     for i in range(len(hash_mat)):
-        hash_row = hash_index_matrix[i]
+        hash_row = hash_mat[i]
         data_row = data_mat[i]
         in_columns = np.where(data_row == 1)[0] # see which sets the hash applies to
-        print(f"hash: {hash_row} for row: {data_row}")
-        print(f"sets: {in_columns}")
+        # print(f"hash: {hash_row} for row: {data_row}")
+        # print(f"sets: {in_columns}")
 
         # iterate on those sets/columns
         for col_i in in_columns:
@@ -55,7 +55,6 @@ def minhash(data_mat, hash_mat):
                                 column, hash_row
                                 )
                              )
-            print(new_column)
             # replace column in actual array
             sig_mat[:, col_i] = new_column
     
