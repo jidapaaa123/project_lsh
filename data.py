@@ -8,6 +8,7 @@ import itertools as iter
 # my own modules
 from minhash import minhash
 from jaccard import jaccard_sim
+from mypprint import pprint
 
 
 os.system('cls')
@@ -72,21 +73,34 @@ sorted_bucket_sizes_items = sorted(bucket_sizes.items(), key=lambda item: item[1
 sorted_bucket_sizes = dict(sorted_bucket_sizes_items)
 # print(sorted_bucket_sizes)
 
-TOP_CANDIDATE_PAIRS = 3
+TOP_CANDIDATE_PAIRS = 10
 top_signatures = list(sorted_bucket_sizes.keys())[:TOP_CANDIDATE_PAIRS]
 # print(top_signatures)
 
-top_sets = defaultdict(list)
-for sig in top_signatures:
-    top_sets[sig] = buckets[sig]
-# print(top_sets)
-
-
 # JACCARD SIMILARITY ON FULL SIGNATURES
 
-    
+jaccard_similarities = defaultdict(float)
+# per each top signature...
+import itertools
+for sig in top_signatures:
+    sets = buckets[sig]     # sets in the same band-signature bucket
 
+    if len(sets) <= 1:       # otherwise just skip this signature...
+        break                # and because it's sorted, just skip the rest too
 
+    # for each combination of the sets...
+    for i, j in itertools.combinations(sets, 2):
+        # ith and jth columns of the full signature_matrix!
+        sim = jaccard_sim(np.array(signature_matrix[:, i]), 
+                          np.array(signature_matrix[:, j]))
+        jaccard_similarities[(i, j)] = sim
+
+# sort by the value of the key-value pair
+sorted_jSim_items = sorted(jaccard_similarities.items(), key=lambda item: item[1], reverse=True)
+jaccard_similarities = dict(sorted_jSim_items)
+
+# FULL JACCARD SIMILARITY OF ALL CANDIDATE PAIRS
+pprint(jaccard_similarities)
 
 
 
