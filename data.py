@@ -8,7 +8,6 @@ import itertools as iter
 # my own modules
 from minhash import minhash
 from jaccard import jaccard_sim
-from mypprint import pprint
 
 
 os.system('cls')
@@ -28,10 +27,11 @@ pivot = pd.pivot_table(
 
 # Normalize each column --> (x - min) / (min - max)
 pivot['consumption'] = pivot['consumption'].apply(lambda col: (col - col.min()) / (col.max() - col.min()))
+# print(pivot['consumption'])
 
 # Turn all values into 1's and 0's, with threshold being >= 0.5
-pivot['consumption'] = pivot['consumption'].applymap(lambda x: 1 if x >= 0.5 else 0)
-
+pivot['consumption'] = pivot['consumption'].map((lambda x: 1 if x >= 0.5 else 0))
+# print(pivot['consumption'])
 
 # I just noticed the project doesn't seem to care about
 # the co2_emission column, so I'll ignore it now
@@ -73,7 +73,7 @@ sorted_bucket_sizes_items = sorted(bucket_sizes.items(), key=lambda item: item[1
 sorted_bucket_sizes = dict(sorted_bucket_sizes_items)
 # print(sorted_bucket_sizes)
 
-TOP_CANDIDATE_PAIRS = 10
+TOP_CANDIDATE_PAIRS = 5
 top_signatures = list(sorted_bucket_sizes.keys())[:TOP_CANDIDATE_PAIRS]
 # print(top_signatures)
 
@@ -100,9 +100,22 @@ sorted_jSim_items = sorted(jaccard_similarities.items(), key=lambda item: item[1
 jaccard_similarities = dict(sorted_jSim_items)
 
 # FULL JACCARD SIMILARITY OF ALL CANDIDATE PAIRS
-pprint(jaccard_similarities)
+import shutil
 
+# PRINT JACCARD VALUES
+# but replace set_index with country names
+file_path = './final_data.txt'
 
+print("Writing to file...")
+with open(file_path, 'w') as file:
+    file.write('=' * shutil.get_terminal_size()[0] + '\n')
+    for key, value in jaccard_similarities.items():
+        country0 = pivot['consumption'].columns[key[0]]
+        country1 = pivot['consumption'].columns[key[1]]
+        file.write(f"({country0}, {country1}): {value}," + '\n')
+    file.write('=' * shutil.get_terminal_size()[0] + '\n')
+
+print("Data from this run (and only this run) can now be seen in the final_data.txt file")
 
 
 
