@@ -5,8 +5,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import itertools as iter
 
-# my own module
+# my own modules
 from minhash import minhash
+from jaccard import jaccard_sim
 
 
 os.system('cls')
@@ -52,4 +53,42 @@ for i in range(NUM_OF_HASH_FUNCTIONS):
 
 signature_matrix = minhash(pivot['consumption'].to_numpy(), hash_matrix)
 first_band = signature_matrix[:5, :] # takes the first 5 rows
+
+column_tuples = [tuple(first_band[:, j]) for j in range(first_band.shape[1])]
+# bucket by identical tuples
+from collections import defaultdict
+buckets = defaultdict(list)     # to not check for missing keys
+bucket_sizes = defaultdict(int)
+
+# NOTE: this actually buckets IDENTICAL band-signatures together...
+# It's jut such a big data set that somehow it still gets buckets
+#   with multiple sets
+for set, sig in enumerate(column_tuples):
+    buckets[sig].append(set)
+    bucket_sizes[sig] += 1
+
+# sort the buckets
+sorted_bucket_sizes_items = sorted(bucket_sizes.items(), key=lambda item: item[1], reverse=True)
+sorted_bucket_sizes = dict(sorted_bucket_sizes_items)
+# print(sorted_bucket_sizes)
+
+TOP_CANDIDATE_PAIRS = 3
+top_signatures = list(sorted_bucket_sizes.keys())[:TOP_CANDIDATE_PAIRS]
+# print(top_signatures)
+
+top_sets = defaultdict(list)
+for sig in top_signatures:
+    top_sets[sig] = buckets[sig]
+# print(top_sets)
+
+
+# JACCARD SIMILARITY ON FULL SIGNATURES
+
+    
+
+
+
+
+
+
 
